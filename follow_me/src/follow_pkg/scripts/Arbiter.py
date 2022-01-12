@@ -19,7 +19,7 @@ class Arbiter:
         self.subStop = rospy.Subscriber('Stop', String, self.stop)
         self.subAvoid = rospy.Subscriber('Avoid', Twist, self.avoid)
         self.subFollowMe = rospy.Subscriber('FollowMe', Twist, self.follow)
-	self.subEmergencyStop = rospy.Subscriber('btn_stop', Bool, self.emergencystop)
+        self.subEmergencyStop = rospy.Subscriber('btn_stop', Bool, rospy.shutdown)
         self.rate = rospy.Rate(10)  # 10Hz
 
     def stop(self, data):
@@ -30,10 +30,6 @@ class Arbiter:
 
     def follow(self, data):
         self.msgFollowMe = data
-
-    def emergencystop(self,data)
-	if data == True:
-	    self.shutdown()
 
     def run(self):
         msg = Twist()
