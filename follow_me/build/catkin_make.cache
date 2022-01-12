@@ -1,0 +1,2 @@
+follow_pkg
+-DCATKIN_DEVEL_PREFIX=/home/michaela/follow_me/devel -DCMAKE_INSTALL_PREFIX=/home/michaela/follow_me/install -G Unix Makefiles
