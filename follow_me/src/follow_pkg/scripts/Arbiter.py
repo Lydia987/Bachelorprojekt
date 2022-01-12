@@ -4,6 +4,7 @@
 import rospy
 from geometry_msgs.msg import Twist
 from std_msgs.msg import String
+from std_msgs.msg import Bool
 import numpy as np
 
 
@@ -18,6 +19,7 @@ class Arbiter:
         self.subStop = rospy.Subscriber('Stop', String, self.stop)
         self.subAvoid = rospy.Subscriber('Avoid', Twist, self.avoid)
         self.subFollowMe = rospy.Subscriber('FollowMe', Twist, self.follow)
+	self.subEmergencyStop = rospy.Subscriber('btn_stop', Bool, self.emergencystop)
         self.rate = rospy.Rate(10)  # 10Hz
 
     def stop(self, data):
@@ -28,6 +30,10 @@ class Arbiter:
 
     def follow(self, data):
         self.msgFollowMe = data
+
+    def emergencystop(self,data)
+	if data == True:
+	    self.shutdown()
 
     def run(self):
         msg = Twist()
