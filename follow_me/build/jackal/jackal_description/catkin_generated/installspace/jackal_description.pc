@@ -1,0 +1,8 @@
+prefix=/home/lydia/PycharmProjects/Bachelorprojekt/follow_me/install
+
+Name: jackal_description
+Description: Description of jackal_description
+Version: 0.7.7
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

@@ -1,0 +1,8 @@
+prefix=/home/lydia/PycharmProjects/Bachelorprojekt/follow_me/devel
+
+Name: jackal_msgs
+Description: Description of jackal_msgs
+Version: 0.7.7
+Cflags: -I/home/lydia/PycharmProjects/Bachelorprojekt/follow_me/devel/include
+Libs: -L${prefix}/lib 
+Requires: std_msgs message_runtime

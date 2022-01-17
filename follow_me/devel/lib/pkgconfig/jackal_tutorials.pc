@@ -1,0 +1,8 @@
+prefix=/home/lydia/PycharmProjects/Bachelorprojekt/follow_me/devel
+
+Name: jackal_tutorials
+Description: Description of jackal_tutorials
+Version: 0.7.7
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
