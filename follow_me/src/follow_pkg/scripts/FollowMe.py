@@ -23,7 +23,7 @@ class FollowMe:
         	self.rate = rospy.Rate(10)  # 10Hz
         	self.orientation = 0  # 0° entspricht norden
         	self.actual_pos = [0, 0]  # [latitude,longitude]
-        	self.target_pos = [53.833995, 10.702391]  # [0, 0]  # [latitude,longitude]
+        	self.target_pos = [49.900000022, 8.90000000065]  # [0, 0]  # [latitude,longitude]
         	self.SmartphoneLatitudes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         	self.SmartphoneLongitudes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -92,9 +92,15 @@ class FollowMe:
 	        msg.angular.z = self.get_angular_vel()
 	        msg.linear.x = self.calculate_speed(self.get_distance())
 	        self.pub_twist.publish(msg)
+		# nur zum Test:
+		self.target_pos[0] += np.random.randint(-10, 10) * 0.000001
+		self.target_pos[1] += np.random.randint(-10, 10) * 0.000001
+
 		print("---------------------------------")
 		print("pos", self.actual_pos[0], self.actual_pos[1])
 		print("dis,ang", self.get_distance(),np.rad2deg(self.get_angle()))
+
+
 	        rospy.on_shutdown(self.stop)
 	        self.rate.sleep()
 

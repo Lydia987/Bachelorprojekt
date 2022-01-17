@@ -1,8 +1,8 @@
-# Install script for directory: /home/michaela/follow_me/src/follow_pkg
+# Install script for directory: /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/src/follow_pkg
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/michaela/follow_me/install")
+  set(CMAKE_INSTALL_PREFIX "/home/lydia/PycharmProjects/Bachelorprojekt/follow_me/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,17 +33,17 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/michaela/follow_me/build/follow_pkg/catkin_generated/installspace/follow_pkg.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/lydia/PycharmProjects/Bachelorprojekt/follow_me/build/follow_pkg/catkin_generated/installspace/follow_pkg.pc")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/follow_pkg/cmake" TYPE FILE FILES
-    "/home/michaela/follow_me/build/follow_pkg/catkin_generated/installspace/follow_pkgConfig.cmake"
-    "/home/michaela/follow_me/build/follow_pkg/catkin_generated/installspace/follow_pkgConfig-version.cmake"
+    "/home/lydia/PycharmProjects/Bachelorprojekt/follow_me/build/follow_pkg/catkin_generated/installspace/follow_pkgConfig.cmake"
+    "/home/lydia/PycharmProjects/Bachelorprojekt/follow_me/build/follow_pkg/catkin_generated/installspace/follow_pkgConfig-version.cmake"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/follow_pkg" TYPE FILE FILES "/home/michaela/follow_me/src/follow_pkg/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/follow_pkg" TYPE FILE FILES "/home/lydia/PycharmProjects/Bachelorprojekt/follow_me/src/follow_pkg/package.xml")
 endif()
 

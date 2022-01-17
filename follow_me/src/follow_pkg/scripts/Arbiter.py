@@ -19,7 +19,7 @@ class Arbiter:
         self.subStop = rospy.Subscriber('Stop', String, self.stop)
         self.subAvoid = rospy.Subscriber('Avoid', Twist, self.avoid)
         self.subFollowMe = rospy.Subscriber('FollowMe', Twist, self.follow)
-        self.subEmergencyStop = rospy.Subscriber('btn_stop', Bool, rospy.shutdown)
+        self.subEmergencyStop = rospy.Subscriber('btn_stop', Bool, self.shutdown)
         self.rate = rospy.Rate(10)  # 10Hz
 
     def stop(self, data):
@@ -39,17 +39,20 @@ class Arbiter:
         msg.angular.y = 0
 
         while not rospy.is_shutdown():
-            if self.msgStop == "stop":
-                self.shutdown()
-            elif abs(self.msgAvoid.linear.x) > 0 and abs(self.msgAvoid.angular.z) > 0:
-                msg.linear.x = (0.9 * self.msgAvoid.linear.x + 0.1 * self.msgFollowMe.linear.x)/3
-                msg.angular.z = (0.9 * self.msgAvoid.angular.z + 0.1 * self.msgFollowMe.angular.z)/3
-	    else:
-		msg.linear.x = self.msgFollowMe.linear.x
+            #if self.msgStop == "stop":
+            #    self.shutdown()
+            if abs(self.msgAvoid.linear.x) > 0 or abs(self.msgAvoid.angular.z) > 0:
+                msg.linear.x = 0.9 * self.msgAvoid.linear.x + 0.1 * self.msgFollowMe.linear.x
+                msg.angular.z = 0.9 * self.msgAvoid.angular.z + 0.1 * self.msgFollowMe.angular.z
+            else:
+                msg.linear.x = self.msgFollowMe.linear.x
                 msg.angular.z = self.msgFollowMe.angular.z
+
             self.pub.publish(msg)
             rospy.on_shutdown(self.shutdown)
             self.rate.sleep()
+
+
 
     # stop robot when node is stopped
     def shutdown(self):

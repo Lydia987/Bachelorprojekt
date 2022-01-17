@@ -1,4 +1,4 @@
-prefix=/home/michaela/follow_me/devel
+prefix=/home/lydia/PycharmProjects/Bachelorprojekt/follow_me/devel
 
 Name: follow_pkg
 Description: Description of follow_pkg

@@ -10,7 +10,7 @@ class Avoid:
 	def __init__(self):
 		rospy.init_node('Avoid', anonymous=True)
 		self.pub = rospy.Publisher('Avoid', Twist, queue_size=10)
-		self.sub = rospy.Subscriber('/scan', LaserScan, self.getVector) # für Simulation /front/scan
+		self.sub = rospy.Subscriber('/front/scan', LaserScan, self.getVector) # für Simulation /front/scan für Realität /scan
 		self.rate = rospy.Rate(10) #10Hz
 		# x- und y-Komponenten des gemessenen Vektors
 		self.x_vector = 0

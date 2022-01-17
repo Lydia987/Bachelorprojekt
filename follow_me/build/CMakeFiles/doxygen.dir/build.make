@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/michaela/follow_me/src
+CMAKE_SOURCE_DIR = /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/michaela/follow_me/build
+CMAKE_BINARY_DIR = /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/build
 
 # Utility rule file for doxygen.
 
@@ -67,6 +67,6 @@ CMakeFiles/doxygen.dir/clean:
 .PHONY : CMakeFiles/doxygen.dir/clean
 
 CMakeFiles/doxygen.dir/depend:
-	cd /home/michaela/follow_me/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/michaela/follow_me/src /home/michaela/follow_me/src /home/michaela/follow_me/build /home/michaela/follow_me/build /home/michaela/follow_me/build/CMakeFiles/doxygen.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/src /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/src /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/build /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/build /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/build/CMakeFiles/doxygen.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/doxygen.dir/depend
 

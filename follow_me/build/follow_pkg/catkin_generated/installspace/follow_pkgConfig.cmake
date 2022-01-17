@@ -67,14 +67,14 @@ set(follow_pkg_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(follow_pkg_SOURCE_PREFIX /home/michaela/follow_me/src/follow_pkg)
-  set(follow_pkg_DEVEL_PREFIX /home/michaela/follow_me/devel)
+  set(follow_pkg_SOURCE_PREFIX /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/src/follow_pkg)
+  set(follow_pkg_DEVEL_PREFIX /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/devel)
   set(follow_pkg_INSTALL_PREFIX "")
   set(follow_pkg_PREFIX ${follow_pkg_DEVEL_PREFIX})
 else()
   set(follow_pkg_SOURCE_PREFIX "")
   set(follow_pkg_DEVEL_PREFIX "")
-  set(follow_pkg_INSTALL_PREFIX /home/michaela/follow_me/install)
+  set(follow_pkg_INSTALL_PREFIX /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/install)
   set(follow_pkg_PREFIX ${follow_pkg_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/michaela/follow_me/install/lib;/opt/ros/kinetic/lib)
+    foreach(path /home/lydia/PycharmProjects/Bachelorprojekt/follow_me/install/lib;/home/lydia/PycharmProjects/Bachelorprojekt/follow_me/devel/lib;/opt/ros/kinetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
