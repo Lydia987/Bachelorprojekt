@@ -5,41 +5,39 @@ import rospy
 from sensor_msgs.msg import NavSatFix, Imu
 from geometry_msgs.msg import Twist
 from tf.transformations import euler_from_quaternion
-
+from std_msgs.msg import String
 import numpy as np
-
 
 
 class FollowMe:
 	def __init__(self):
 		rospy.init_node('FollowMe', anonymous=True)
+		self.pub_angle = rospy.Publisher('FollowAngle', String, queue_size=10)
 		self.pub_twist = rospy.Publisher('FollowMe', Twist, queue_size=10)
-		self.sub_roboter_gps = rospy.Subscriber('/navsat/fix', NavSatFix,
-                                                self.set_actual_pos)
-		self.sub_roboter_imu = rospy.Subscriber('/imu/data', Imu,
-                                                self.set_actual_orientation)
-        	# self.sub_handy_gps = rospy.Subscriber('smartphone_gps', NavSatFix,
-        	#                                      self.set_target_pos)
-        	self.rate = rospy.Rate(10)  # 10Hz
-        	self.orientation = 0  # 0° entspricht norden
-        	self.actual_pos = [0, 0]  # [latitude,longitude]
-        	self.target_pos = [49.900000022, 8.90000000065]  # [0, 0]  # [latitude,longitude]
-        	self.SmartphoneLatitudes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        	self.SmartphoneLongitudes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		# self.sub_handy_gps = rospy.Subscriber('smartphone_gps', NavSatFix, self.set_target_pos)
+		self.sub_roboter_gps = rospy.Subscriber('/navsat/fix', NavSatFix, self.set_actual_pos)
+		self.sub_roboter_imu = rospy.Subscriber('/imu/data', Imu, self.set_actual_orientation)
+
+		self.rate = rospy.Rate(10)
+		self.orientation = 0  # 0° entspricht norden
+		self.actual_pos = [0, 0]  # [latitude,longitude]
+		self.target_pos = [49.900000022, 8.90000000065]  # [0, 0]  # [latitude,longitude]
+		self.SmartphoneLatitudes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		self.SmartphoneLongitudes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		self.msg_wallFollowing = Twist()
+		self.lidarData = 0
 
 
     	# the position of the robot
-    	def set_actual_pos(self, data):
-        	self.actual_pos[0] = data.latitude
-        	self.actual_pos[1] = data.longitude
+	def set_actual_pos(self, data):
+		self.actual_pos[0] = data.latitude
+		self.actual_pos[1] = data.longitude
         
 	
 	# the orientation of the robot
 	def set_actual_orientation(self, data):
 		euler_angles = euler_from_quaternion((data.orientation.x,data.orientation.y,data.orientation.z,data.orientation.w))
 		self.orientation = euler_angles[2]
-		
- 
 
 
 	# calculates the distance between robot and smartphone in km
@@ -78,7 +76,6 @@ class FollowMe:
 	    else:
 		speed = 2
 	        #speed = np.abs(distance) * 10
-	    #print("vel lin",speed)
 	    return speed
 
 
@@ -91,14 +88,13 @@ class FollowMe:
 	    while not rospy.is_shutdown():
 	        msg.angular.z = self.get_angular_vel()
 	        msg.linear.x = self.calculate_speed(self.get_distance())
+		msg = self.msg_wallFollowing
 	        self.pub_twist.publish(msg)
-		# nur zum Test:
-		self.target_pos[0] += np.random.randint(-10, 10) * 0.000001
-		self.target_pos[1] += np.random.randint(-10, 10) * 0.000001
+		self.pub_angle.publish(str(self.get_angle()))
 
-		print("---------------------------------")
-		print("pos", self.actual_pos[0], self.actual_pos[1])
-		print("dis,ang", self.get_distance(),np.rad2deg(self.get_angle()))
+			# nur zum Test:
+			#self.target_pos[0] += np.random.randint(-10, 10) * 0.000001
+			#self.target_pos[1] += np.random.randint(-10, 10) * 0.000001
 
 
 	        rospy.on_shutdown(self.stop)

@@ -47,13 +47,9 @@ class Avoid:
 					self.x_vector += (1/d)*np.cos(angle)
 					self.y_vector += (1/d)*np.sin(angle)
 
-		self.x_vector = -self.x_vector  # zum Test + 10
+		self.x_vector = -self.x_vector 
 		self.y_vector = -self.y_vector
 		
-
-		#print ("------Vektoren------")
-		#print (self.x_vector)
-		#print (self.y_vector)
 	
 
 	
@@ -66,8 +62,6 @@ class Avoid:
 		
 		if abs(vel) > 1.8:
 			vel = 1.8*np.sign(vel)  # eigentlich 2 testweise nur ...
-		#print("------")
-		#print("lin", vel)
 		return vel
 
 	# calculates the rotate velocity
@@ -80,7 +74,6 @@ class Avoid:
 		vel = angle * 0.4
 		if abs(vel) > 1.5:
 			vel = 1.5 * np.sign(vel)
-		#print("ang", np.rad2deg(angle))
 		return vel
 
 	def run(self):
@@ -90,15 +83,9 @@ class Avoid:
 		msg.linear.z = 0
 		msg.angular.x = 0
 		msg.angular.y = 0
-		#waehrend Roboter an ist
 		while not rospy.is_shutdown():
-			#Setzen der Geschwindigkeiten und Ausgleich der Koordinatensysteme
 			msg.angular.z = self.calculateRotateVelocity(self.x_vector, self.y_vector)
 			msg.linear.x = self.calculateLinearVelocity(self.x_vector, self.y_vector)
-			
-
-			#msg.linear.x = 0
-			#msg.angular.z = 0
 
 			self.pub.publish(msg)
 			rospy.on_shutdown(self.stop)
