@@ -4,6 +4,7 @@
     <node pkg="follow_pkg" name="Avoid" type="Avoid.py" output="screen" />
     <node pkg="follow_pkg" name="Stop" type="Stop.py" output="screen" />
     <node pkg="follow_pkg" name="FollowMe" type="FollowMe.py" output="screen" />
+    <node pkg="follow_pkg" name="WallFollowing" type="WallFollowing.py" output="screen" />
     <node pkg="follow_pkg" name="Arbiter" type="Arbiter.py" output="screen" />
 
     <?ignore
