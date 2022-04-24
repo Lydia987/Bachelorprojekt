@@ -10,9 +10,16 @@ import numpy as np
 class Avoid:
     def __init__(self):
         rospy.init_node('Avoid', anonymous=True)
-        self.pub = rospy.Publisher('Avoid', Twist, queue_size=10)
+
+        # reality
+        # self.sub = rospy.Subscriber('/scan', LaserScan, self.get_vector)
+
+        # simulation
         self.sub = rospy.Subscriber('/front/scan', LaserScan,
-                                    self.get_vector)  # simulation: front/scan, reality: /scan
+                                    self.get_vector)
+
+        # always
+        self.pub = rospy.Publisher('Avoid', Twist, queue_size=10)
         self.rate = rospy.Rate(10)  # 10Hz
         self.x = 0
         self.y = 0

@@ -23,6 +23,13 @@ class Arbiter:
 
     def __init__(self):
         rospy.init_node('Arbiter', anonymous=True)
+        # reality
+        # self.sub_lidar = rospy.Subscriber('/scan', LaserScan, self.set_stop_wall_following)
+
+        # simulation
+        self.sub_lidar = rospy.Subscriber('/front/scan', LaserScan, self.set_stop_wall_following)
+
+        # always
         self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         self.subStop = rospy.Subscriber('Stop', String, self.stop)
         self.subAvoid = rospy.Subscriber('Avoid', Twist, self.avoid)
@@ -30,8 +37,6 @@ class Arbiter:
         self.subFollowMeAngle = rospy.Subscriber('FollowAngle', String, self.set_follow_angle)
         self.subEmergencyStop = rospy.Subscriber('btn_stop', Bool, self.shutdown)
         self.sub_wallFollowing = rospy.Subscriber('WallFollowing', Twist, self.wall_following)
-        self.sub_lidar = rospy.Subscriber('/front/scan', LaserScan,
-                                          self.set_stop_wall_following)  # simulation: front/scan, reality: /scan
         self.rate = rospy.Rate(10)  # Hz
 
     def stop(self, data):
@@ -77,7 +82,7 @@ class Arbiter:
         while not rospy.is_shutdown():
             if self.stop_wall_following and self.previous_behavior == "WallFollowing":
                 self.counter_wallFollowing = 30
-            if False:  # not self.drive:
+            if not self.drive:
                 behavior = self.msgStop
                 self.previous_behavior = "Stop"
                 print("stop")
@@ -97,6 +102,7 @@ class Arbiter:
                 self.previous_behavior = "FollowMe"
                 print("follow")
 
+           
             self.pub.publish(behavior)
             rospy.on_shutdown(self.shutdown)
             self.rate.sleep()

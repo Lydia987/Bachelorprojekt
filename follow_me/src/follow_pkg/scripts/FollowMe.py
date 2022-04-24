@@ -12,16 +12,23 @@ import numpy as np
 class FollowMe:
     def __init__(self):
         rospy.init_node('FollowMe', anonymous=True)
+
+        # reality
+        # self.sub_handy_gps = rospy.Subscriber('jackal_gps', NavSatFix, self.set_target_pos)  # Achtung smartphone_gps = jackal_gps und umgekehrt
+        # self.sub_roboter_gps = rospy.Subscriber('/smartphone_gps', NavSatFix, self.set_actual_pos)
+
+        # simulation
+        self.sub_roboter_gps = rospy.Subscriber('/navsat/fix', NavSatFix, self.set_actual_pos)
+
+        # always
         self.pub_angle = rospy.Publisher('FollowAngle', String, queue_size=10)
         self.pub_twist = rospy.Publisher('FollowMe', Twist, queue_size=10)
-        # self.sub_handy_gps = rospy.Subscriber('smartphone_gps', NavSatFix, self.set_target_pos)
-        self.sub_roboter_gps = rospy.Subscriber('/navsat/fix', NavSatFix, self.set_actual_pos)
         self.sub_roboter_imu = rospy.Subscriber('/imu/data', Imu, self.set_actual_orientation)
 
         self.rate = rospy.Rate(10)
         self.orientation = 0  # 0° = north
         self.actual_pos = [0, 0]  # [latitude,longitude]
-        self.target_pos = [49.900000022, 8.90000000065]  # [0, 0]  # [latitude,longitude]
+        self.target_pos = [49.900000022, 8.90000000065]    # [latitude,longitude]
         self.SmartphoneLatitudes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.SmartphoneLongitudes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.msg_wallFollowing = Twist()
@@ -38,7 +45,21 @@ class FollowMe:
             (data.orientation.x, data.orientation.y, data.orientation.z, data.orientation.w))
         self.orientation = euler_angles[2]
 
-    # calculates the distance between robot and smartphone in km
+    def set_target_pos(self, data):
+        # bildet Mittwelwert
+        # for i in range(0, 9):
+        #    self.SmartphoneLatitudes[i + 1] = self.SmartphoneLatitudes[i]
+        #    self.SmartphoneLongitudes[i + 1] = self.SmartphoneLongitudes[i]
+        # self.SmartphoneLatitudes[0] = data.latitude
+        # self.SmartphoneLongitudes[0] = data.longitude
+        # self.target_pos[0] = np.sum(self.SmartphoneLatitudes) / 10
+        # self.target_pos[1] = np.sum(self.SmartphoneLongitudes) / 10
+
+        self.target_pos[0] = data.latitude
+        self.target_pos[1] = data.longitude
+
+        # calculates the distance between robot and smartphone in km
+
     def get_distance(self):
         return (np.sqrt(((self.target_pos[0] - self.actual_pos[0]) * 111.3) ** 2
                         + ((self.target_pos[1] - self.actual_pos[1]) * 71.5) ** 2))
@@ -70,7 +91,7 @@ class FollowMe:
             print("Ziel erreicht!")
         else:
             vel = 2
-            
+
         return vel
 
     def run(self):
@@ -80,6 +101,9 @@ class FollowMe:
         msg.angular.x = 0
         msg.angular.y = 0
         while not rospy.is_shutdown():
+            # Testausgaben:
+            print("Distanz:", self.get_distance())
+
             msg.angular.z = self.get_angular_vel()
             msg.linear.x = self.get_linear_vel(self.get_distance())
             msg = self.msg_wallFollowing
@@ -100,15 +124,3 @@ if __name__ == '__main__':
         pass
 
 # the position of the smartphone
-
-"""
-    	def set_target_pos(self, data):
-        	# bildet Mittwelwert
-        	for i in range(0, 9):
-            		self.SmartphoneLatitudes[i+1] = self.SmartphoneLatitudes[i]
-            		self.SmartphoneLongitudes[i+1] = self.SmartphoneLongitudes[i]
-        	self.SmartphoneLatitudes[0] = data.latitude
-        	self.SmartphoneLongitudes[0] = data.longitude
-        	self.target_pos[0] = np.sum(self.SmartphoneLatitudes)/10
-        	self.target_pos[1] = np.sum(self.SmartphoneLongitudes)/10
-"""
