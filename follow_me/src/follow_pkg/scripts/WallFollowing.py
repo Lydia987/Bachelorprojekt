@@ -25,7 +25,7 @@ class WallFollowing:
 
         # always
         self.pub = rospy.Publisher('WallFollowing', Twist, queue_size=10)
-        self.rate = rospy.Rate(10)  # Hz
+        self.rate = rospy.Rate(10)
 
     # calculates the vector to follow the wall
     def get_vector(self, data):

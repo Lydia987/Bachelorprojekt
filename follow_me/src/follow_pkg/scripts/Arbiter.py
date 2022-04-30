@@ -19,9 +19,9 @@ class Arbiter:
     drive = True
     behavior = "FollowMe"
     previous_behavior = "FollowMe"
-    counter_wallFollowing = 10
+    counter_wallFollowing = 40
     isWallFollowing = False
-    R = 2.6
+    R = 2.8
 
     def __init__(self):
         rospy.init_node('Arbiter', anonymous=True)
@@ -65,16 +65,17 @@ class Arbiter:
     def set_isWallFollowing(self, data):
         isLeftWall = self.get_mean_dist(data, -60, -40) < 2
         isRightWall = self.get_mean_dist(data, 40, 60) < 2
-        isTargetDirectionFree = self.get_mean_dist(data, self.followAngle - 4, self.followAngle + 4) > 2.5
+        isTargetDirectionFree = self.get_mean_dist(data, self.followAngle - 4, self.followAngle + 4) > 2.7
 
         if self.behavior == "Avoid" and self.counter_wallFollowing > 0:
             self.counter_wallFollowing -= 1
 
         if isTargetDirectionFree or not (isLeftWall or isRightWall) or self.counter_wallFollowing > 0:
             self.isWallFollowing = False
+            if self.previous_behavior == "WallFollowing":
+                self.counter_wallFollowing = 40
         else:
             self.isWallFollowing = True
-            self.counter_wallFollowing = 10
 
     # decides which is the right behavior and published the twist message of this behavior
     def run(self):
@@ -121,7 +122,7 @@ class Arbiter:
             dist_i = data.ranges[i]
             if np.isnan(dist_i):
                 dist_i = 0.0
-            if np.isinf(dist_i) or self.R:
+            if np.isinf(dist_i) or dist_i > self.R:
                 dist_i = self.R
 
             sum_dist += dist_i

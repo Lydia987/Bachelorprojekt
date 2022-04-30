@@ -24,7 +24,7 @@ class Avoid:
         self.x = 0
         self.y = 0
         # repulsive force up to R in meter
-        self.R = 1.5
+        self.R = 2
 
     # calculates the vector for driving away from obstacles
     def get_vector(self, data):
