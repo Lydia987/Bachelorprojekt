@@ -7,31 +7,34 @@ from geometry_msgs.msg import Twist
 import numpy as np
 
 
+# calculates the twist message to follow the wall
 class WallFollowing:
-    desired_dist = 1.1
+    desired_dist = 1.1  # desired distance to the wall
     correction_strength = 0.9
-    R = 2.5
+    R = 2.5  # repulsive force up to R in meter
     follow_right = True
 
     def __init__(self):
         rospy.init_node('WallFollowing', anonymous=True)
-        self.pub = rospy.Publisher('WallFollowing', Twist,
-                                   queue_size=10)  # normally WallFollowing, for separate testing /cmd_vel
-        self.sub = rospy.Subscriber('/front/scan', LaserScan,
-                                    self.get_vector)  # simulation: /front/scan, reality: /scan
+
+        # reality
+        # self.sub = rospy.Subscriber('/scan', LaserScan, self.get_vector)
+
+        # simulation
+        self.sub = rospy.Subscriber('/front/scan', LaserScan, self.get_vector)
+
+        # always
+        self.pub = rospy.Publisher('WallFollowing', Twist, queue_size=10)
         self.rate = rospy.Rate(10)  # Hz
 
+    # calculates the vector to follow the wall
     def get_vector(self, data):
         msg = Twist()
         msg.linear.x = 1
-        msg.linear.y = 0
-        msg.linear.z = 0
-        msg.angular.x = 0
-        msg.angular.y = 0
 
         left_mean_dist = self.get_mean_dist(data, -70, -30)
-        right_mean_dist = self.get_mean_dist(data, 30, 70)
         front_mean_dist = self.get_mean_dist(data, -30, 30)
+        right_mean_dist = self.get_mean_dist(data, 30, 70)
 
         if left_mean_dist >= right_mean_dist:
             # Follow right wall
@@ -49,15 +52,10 @@ class WallFollowing:
                 # turn right:
                 msg.angular.z = 2
 
-        # print("dist_f",left_mean_dist)
-        # print("dist_l",right_mean_dist)
-        # print("dist_r",left_mean_dist)
-        # print("msg",msg)
-        # msg.angular.z = 0
         self.pub.publish(msg)
 
+    # calculates the mean distance to obstacles between the min_angle and max_angle
     def get_mean_dist(self, data, min_angle, max_angle):
-
         sum_dist = 0.0
         start_angle = np.deg2rad(min_angle)  # rad (front = 0 rad)
         end_angle = np.deg2rad(max_angle)  # rad (front = 0 rad)
@@ -86,7 +84,7 @@ class WallFollowing:
         return mean_dist
 
     def run(self):
-        rospy.Rate(10)  # Hz
+        rospy.Rate(10)
         rospy.spin()
 
 

@@ -9,16 +9,18 @@ from std_msgs.msg import String
 import numpy as np
 
 
+# calculates the twist message to follow the Smartphone gps coordinates
 class FollowMe:
     def __init__(self):
         rospy.init_node('FollowMe', anonymous=True)
 
         # reality
-        # self.sub_handy_gps = rospy.Subscriber('jackal_gps', NavSatFix, self.set_target_pos)  # Achtung smartphone_gps = jackal_gps und umgekehrt
-        # self.sub_roboter_gps = rospy.Subscriber('/smartphone_gps', NavSatFix, self.set_actual_pos)
+        # self.sub_roboter_gps = rospy.Subscriber('/navsat/fix', NavSatFix, self.set_actual_pos)
+        # self.sub_handy_gps = rospy.Subscriber('/smartphone_gps', NavSatFix, self.set_target_pos)
 
         # simulation
         self.sub_roboter_gps = rospy.Subscriber('/navsat/fix', NavSatFix, self.set_actual_pos)
+        self.sub_handy_gps = rospy.Subscriber('/fix', NavSatFix, self.set_target_pos)
 
         # always
         self.pub_angle = rospy.Publisher('FollowAngle', String, queue_size=10)
@@ -28,11 +30,7 @@ class FollowMe:
         self.rate = rospy.Rate(10)
         self.orientation = 0  # 0° = north
         self.actual_pos = [0, 0]  # [latitude,longitude]
-        self.target_pos = [49.900000022, 8.90000000065]    # [latitude,longitude]
-        self.SmartphoneLatitudes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.SmartphoneLongitudes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.msg_wallFollowing = Twist()
-        self.lidarData = 0
+        self.target_pos = [0, 0]  # [latitude,longitude]
 
     # the position of the robot
     def set_actual_pos(self, data):
@@ -45,21 +43,12 @@ class FollowMe:
             (data.orientation.x, data.orientation.y, data.orientation.z, data.orientation.w))
         self.orientation = euler_angles[2]
 
+    # the position of the smartphone
     def set_target_pos(self, data):
-        # bildet Mittwelwert
-        # for i in range(0, 9):
-        #    self.SmartphoneLatitudes[i + 1] = self.SmartphoneLatitudes[i]
-        #    self.SmartphoneLongitudes[i + 1] = self.SmartphoneLongitudes[i]
-        # self.SmartphoneLatitudes[0] = data.latitude
-        # self.SmartphoneLongitudes[0] = data.longitude
-        # self.target_pos[0] = np.sum(self.SmartphoneLatitudes) / 10
-        # self.target_pos[1] = np.sum(self.SmartphoneLongitudes) / 10
-
         self.target_pos[0] = data.latitude
         self.target_pos[1] = data.longitude
 
-        # calculates the distance between robot and smartphone in km
-
+    # calculates the distance between robot and smartphone in km
     def get_distance(self):
         return (np.sqrt(((self.target_pos[0] - self.actual_pos[0]) * 111.3) ** 2
                         + ((self.target_pos[1] - self.actual_pos[1]) * 71.5) ** 2))
@@ -82,38 +71,25 @@ class FollowMe:
             vel = 1.5 * np.sign(vel)
         return vel
 
-    def get_linear_vel(self, distance):
-        # vel in m/s
-        if distance > 2:  # max vel of jackal is 2m/s
-            vel = 2
+    def get_linear_vel(self):
+        distance = self.get_distance()
+        if distance > 0.005:
+            vel = 2  # max vel of jackal is 2m/s
         elif distance < 0.0015:
             vel = 0
             print("Ziel erreicht!")
         else:
-            vel = 2
+            vel = distance * 300
 
         return vel
 
     def run(self):
         msg = Twist()
-        msg.linear.y = 0
-        msg.linear.z = 0
-        msg.angular.x = 0
-        msg.angular.y = 0
         while not rospy.is_shutdown():
-            # Testausgaben:
-            print("Distanz:", self.get_distance())
-
             msg.angular.z = self.get_angular_vel()
-            msg.linear.x = self.get_linear_vel(self.get_distance())
-            msg = self.msg_wallFollowing
+            msg.linear.x = self.get_linear_vel()
             self.pub_twist.publish(msg)
             self.pub_angle.publish(str(self.get_angle()))
-
-            # nur zum Test:
-            # self.target_pos[0] += np.random.randint(-10, 10) * 0.000001
-            # self.target_pos[1] += np.random.randint(-10, 10) * 0.000001
-
             self.rate.sleep()
 
 
@@ -122,5 +98,3 @@ if __name__ == '__main__':
         FollowMe().run()
     except rospy.ROSInterruptException:
         pass
-
-# the position of the smartphone

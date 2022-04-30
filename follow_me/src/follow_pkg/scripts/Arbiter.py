@@ -9,6 +9,7 @@ from sensor_msgs.msg import LaserScan
 import numpy as np
 
 
+# determines the current behavior
 class Arbiter:
     msgStop = Twist()
     msgAvoid = Twist()
@@ -16,9 +17,10 @@ class Arbiter:
     msgWallFollowing = Twist()
     followAngle = 0.0  # grad
     drive = True
+    behavior = "FollowMe"
     previous_behavior = "FollowMe"
-    counter_wallFollowing = 30
-    stop_wall_following = False
+    counter_wallFollowing = 10
+    isWallFollowing = False
     R = 2.6
 
     def __init__(self):
@@ -27,7 +29,7 @@ class Arbiter:
         # self.sub_lidar = rospy.Subscriber('/scan', LaserScan, self.set_stop_wall_following)
 
         # simulation
-        self.sub_lidar = rospy.Subscriber('/front/scan', LaserScan, self.set_stop_wall_following)
+        self.sub_lidar = rospy.Subscriber('/front/scan', LaserScan, self.set_isWallFollowing)
 
         # always
         self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
@@ -36,16 +38,12 @@ class Arbiter:
         self.subFollowMe = rospy.Subscriber('FollowMe', Twist, self.follow)
         self.subFollowMeAngle = rospy.Subscriber('FollowAngle', String, self.set_follow_angle)
         self.subEmergencyStop = rospy.Subscriber('btn_stop', Bool, self.shutdown)
-        self.sub_wallFollowing = rospy.Subscriber('WallFollowing', Twist, self.wall_following)
-        self.rate = rospy.Rate(10)  # Hz
+        self.subWallFollowing = rospy.Subscriber('WallFollowing', Twist, self.wall_following)
+        self.rate = rospy.Rate(10)
 
     def stop(self, data):
         self.msgStop = Twist()
         self.msgStop.linear.x = 0
-        self.msgStop.linear.y = 0
-        self.msgStop.linear.z = 0
-        self.msgStop.angular.x = 0
-        self.msgStop.angular.y = 0
         self.msgStop.angular.z = 0
         if data.data == "stop":
             self.drive = False
@@ -64,51 +62,46 @@ class Arbiter:
     def wall_following(self, data):
         self.msgWallFollowing = data
 
-    def set_stop_wall_following(self, data):
-        if self.get_mean_dist(data, self.followAngle - 4,
-                              self.followAngle + 4) > 2.5 or (
-                self.get_mean_dist(data, -70, -40) > 2 and self.get_mean_dist(data, 40, 70) > 2.5):
-            self.stop_wall_following = True
+    def set_isWallFollowing(self, data):
+        isLeftWall = self.get_mean_dist(data, -60, -40) < 2
+        isRightWall = self.get_mean_dist(data, 40, 60) < 2
+        isTargetDirectionFree = self.get_mean_dist(data, self.followAngle - 4, self.followAngle + 4) > 2.5
+
+        if self.behavior == "Avoid" and self.counter_wallFollowing > 0:
+            self.counter_wallFollowing -= 1
+
+        if isTargetDirectionFree or not (isLeftWall or isRightWall) or self.counter_wallFollowing > 0:
+            self.isWallFollowing = False
         else:
-            self.stop_wall_following = False
+            self.isWallFollowing = True
+            self.counter_wallFollowing = 10
 
+    # decides which is the right behavior and published the twist message of this behavior
     def run(self):
-        behavior = Twist()
-        behavior.linear.y = 0
-        behavior.linear.z = 0
-        behavior.angular.x = 0
-        behavior.angular.y = 0
-
+        msg = Twist()
         while not rospy.is_shutdown():
-            if self.stop_wall_following and self.previous_behavior == "WallFollowing":
-                self.counter_wallFollowing = 30
+            self.previous_behavior = self.behavior
             if not self.drive:
-                behavior = self.msgStop
-                self.previous_behavior = "Stop"
-                print("stop")
+                self.behavior = "Stop"
+                msg = self.msgStop
+            elif self.isWallFollowing:
+                self.behavior = "WallFollowing"
+                msg = self.msgWallFollowing
             elif abs(self.msgAvoid.linear.x) > 0 or abs(self.msgAvoid.angular.z) > 0:
-                print("avoid")
-                behavior.linear.x = 0.9 * self.msgAvoid.linear.x + 0.1 * self.msgFollowMe.linear.x
-                behavior.angular.z = 0.9 * self.msgAvoid.angular.z + 0.1 * self.msgFollowMe.angular.z
-                if self.previous_behavior == "Avoid":
-                    self.counter_wallFollowing -= 1
-                self.previous_behavior = "Avoid"
-                if self.counter_wallFollowing == 0:
-                    self.previous_behavior = "WallFollowing"
-                    print("wall")
-                    behavior = self.msgWallFollowing
+                self.behavior = "Avoid"
+                msg.linear.x = 0.9 * self.msgAvoid.linear.x + 0.1 * self.msgFollowMe.linear.x
+                msg.angular.z = 0.9 * self.msgAvoid.angular.z + 0.1 * self.msgFollowMe.angular.z
             else:
-                behavior = self.msgFollowMe
-                self.previous_behavior = "FollowMe"
-                print("follow")
+                self.behavior = "FollowMe"
+                msg = self.msgFollowMe
 
-           
-            self.pub.publish(behavior)
+            print(self.behavior)
+            self.pub.publish(msg)
             rospy.on_shutdown(self.shutdown)
             self.rate.sleep()
 
+    # calculates the mean distance to obstacles between the min_angle and max_angle
     def get_mean_dist(self, data, min_angle, max_angle):
-
         sum_dist = 0.0
         start_angle = np.deg2rad(min_angle)  # rad (front = 0 rad)
         end_angle = np.deg2rad(max_angle)  # rad (front = 0 rad)
@@ -140,12 +133,7 @@ class Arbiter:
     # stop robot when node is stopped
     def shutdown(self):
         Twist().linear.x = 0
-        Twist().linear.y = 0
-        Twist().linear.z = 0
-        Twist().angular.x = 0
-        Twist().angular.y = 0
         Twist().angular.z = 0
-
         self.pub.publish(Twist())
 
 

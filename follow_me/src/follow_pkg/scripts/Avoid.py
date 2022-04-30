@@ -7,6 +7,7 @@ from geometry_msgs.msg import Twist
 import numpy as np
 
 
+# calculates the twist message to drive away from obstacles
 class Avoid:
     def __init__(self):
         rospy.init_node('Avoid', anonymous=True)
@@ -15,17 +16,17 @@ class Avoid:
         # self.sub = rospy.Subscriber('/scan', LaserScan, self.get_vector)
 
         # simulation
-        self.sub = rospy.Subscriber('/front/scan', LaserScan,
-                                    self.get_vector)
+        self.sub = rospy.Subscriber('/front/scan', LaserScan, self.get_vector)
 
         # always
         self.pub = rospy.Publisher('Avoid', Twist, queue_size=10)
-        self.rate = rospy.Rate(10)  # 10Hz
+        self.rate = rospy.Rate(10)
         self.x = 0
         self.y = 0
-        # repulsive force up to R
-        self.R = 2
+        # repulsive force up to R in meter
+        self.R = 1.5
 
+    # calculates the vector for driving away from obstacles
     def get_vector(self, data):
 
         self.x = 0
@@ -52,7 +53,6 @@ class Avoid:
                 self.x -= (1 / dist_i) * np.cos(angle)
                 self.y -= (1 / dist_i) * np.sin(angle)
 
-
     def calc_linear_vel(self):
         repulsive_force = (self.x ** 2 + self.y ** 2) ** 0.5
         if repulsive_force == 0:
@@ -63,11 +63,10 @@ class Avoid:
             vel = 1.8 * np.sign(vel)
         return vel
 
-
-    def calc_angular_vel(self, x, y):
-        if x == 0 and y == 0:
+    def calc_angular_vel(self):
+        if self.x == 0 and self.y == 0:
             return 0
-        angle = np.arctan2(y, x)
+        angle = np.arctan2(self.y, self.x)
         if angle == 0:
             return 0
         vel = angle * 0.4
@@ -76,14 +75,9 @@ class Avoid:
         return vel
 
     def run(self):
-        # alle nicht benoetigten Werte auf null setzen
         msg = Twist()
-        msg.linear.y = 0
-        msg.linear.z = 0
-        msg.angular.x = 0
-        msg.angular.y = 0
         while not rospy.is_shutdown():
-            msg.angular.z = self.calc_angular_vel(self.x, self.y)
+            msg.angular.z = self.calc_angular_vel()
             msg.linear.x = self.calc_linear_vel()
 
             self.pub.publish(msg)
