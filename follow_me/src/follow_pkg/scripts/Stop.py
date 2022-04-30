@@ -22,9 +22,10 @@ class Stop:
 
         # always
         self.stop_pub = rospy.Publisher('Stop', String, queue_size=10)
-        self.sub_roboter_gps = rospy.Subscriber('/navsat/fix', NavSatFix, self.set_actual_pos)
+        self.sub_roboter_gps = rospy.Subscriber('/navsat/fix', NavSatFix, self.set_pos)
         self.sub_vel = rospy.Subscriber('/cmd_vel', Twist, self.set_velocity)
 
+        self.counter = 1000000
         self.msg = "drive"
         self.vel = 0
         self.rate = rospy.Rate(10)
@@ -39,12 +40,9 @@ class Stop:
                 break
             else:
                 self.msg = "drive"
-        self.stop_pub.publish(self.msg)
 
     # the position of the robot
-    def set_actual_pos(self, data):
-
-        self.old_pos = self.actual_pos
+    def set_pos(self, data):
         self.actual_pos[0] = data.latitude
         self.actual_pos[1] = data.longitude
 
@@ -54,13 +52,17 @@ class Stop:
 
     def run(self):
         while not rospy.is_shutdown():
-            dist = np.sqrt(((self.old_pos[0] - self.actual_pos[0]) * 111.3) ** 2 + (
-                        (self.old_pos[1] - self.actual_pos[1]) * 71.5) ** 2)
-            print("dist, vel", dist, vel)
-            if (dist < 0.0015) and not (self.vel == 0):
-                print("festgefahren")
-                self.msg = "stop"
-                self.stop_pub.publish(self.msg)
+            dist = abs(self.old_pos[0] - self.actual_pos[0]) + (abs(self.old_pos[1] - self.actual_pos[1]))
+            if dist == 0 and not(self.vel == 0):
+                self.msg = "festgefahren"
+
+            if self.counter == 0:
+                self.old_pos = self.actual_pos
+                self.counter = 100
+            else:
+                self.counter -= 1
+
+            self.stop_pub.publish(self.msg)
             self.rate.sleep()
 
 

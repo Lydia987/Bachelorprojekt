@@ -17,6 +17,7 @@ class Arbiter:
     msgWallFollowing = Twist()
     followAngle = 0.0  # grad
     drive = True
+    stuck = False
     behavior = "FollowMe"
     previous_behavior = "FollowMe"
     counter_wallFollowing = 40
@@ -45,7 +46,13 @@ class Arbiter:
         self.msgStop = Twist()
         self.msgStop.linear.x = 0
         self.msgStop.angular.z = 0
-        if data.data == "stop":
+
+        if data.data == "festgefahren":
+            self.stuck = True
+            self.drive = False
+            print("-------------festgefahren---------")
+
+        if data.data == "stop" and not self.stuck:
             self.drive = False
         else:
             self.drive = True
