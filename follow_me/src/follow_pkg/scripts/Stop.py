@@ -25,7 +25,7 @@ class Stop:
         self.sub_roboter_gps = rospy.Subscriber('/navsat/fix', NavSatFix, self.set_pos)
         self.sub_vel = rospy.Subscriber('/cmd_vel', Twist, self.set_velocity)
 
-        self.counter = 1000000
+        self.counter = 2500
         self.msg = "drive"
         self.vel = 0
         self.rate = rospy.Rate(10)
@@ -58,7 +58,7 @@ class Stop:
 
             if self.counter == 0:
                 self.old_pos = self.actual_pos
-                self.counter = 100
+                self.counter = 2500
             else:
                 self.counter -= 1
 

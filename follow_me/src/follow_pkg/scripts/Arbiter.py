@@ -50,9 +50,8 @@ class Arbiter:
         if data.data == "festgefahren":
             self.stuck = True
             self.drive = False
-            print("-------------festgefahren---------")
 
-        if data.data == "stop" and not self.stuck:
+        if data.data == "stop" or self.stuck:
             self.drive = False
         else:
             self.drive = True
@@ -90,7 +89,10 @@ class Arbiter:
         while not rospy.is_shutdown():
             self.previous_behavior = self.behavior
             if not self.drive:
-                self.behavior = "Stop"
+                if self.stuck:
+                    self.behavior = "Festgefahren"
+                else:
+                    self.behavior = "Stop"
                 msg = self.msgStop
             elif self.isWallFollowing:
                 self.behavior = "WallFollowing"
