@@ -43,8 +43,8 @@ class Stop:
 
     # the position of the robot
     def set_pos(self, data):
-        self.actual_pos[0] = data.latitude
-        self.actual_pos[1] = data.longitude
+        self.actual_pos[0] = d.Decimal(data.latitude)
+        self.actual_pos[1] = d.Decimal(data.longitude)
         print("pos", data.latitude, data.longitude)
 
     # the velocity of the robot
