@@ -13,12 +13,13 @@ For the execution in the real world the corresponding commented code lines must 
 the code lines for the execution in simulation must be commented out.
 ***
 
+Used versions of ROS and Ubuntu: Ubuntu 16, ROS kinetc
 For more information, please check out our package documentation.
 
 # Used Technologies
 To simulate the jackal, we used the jackal_simulator and jackal_desktop packages.
 In order to get a more accurate GPS position of the Jackal we have used the robot_localization package.
-In order to get a NavSatFix message from the smartphone we used the ROS-Mobile app and implemented a new widget.
+In order to get a NavSatFix message from the smartphone we used the ROS-Mobile app and implemented a new widget (smartphonegps).
 To simulate GPS in gazebo, we used the hector_gazebo_plugin.
 In order to simulate a smartphone that publishes a NavSatFix message we build the GPS_Ball modell.
 To test how the Jackal reacts to different obstacles we used models from the gazebo_models.
