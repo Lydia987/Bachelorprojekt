@@ -24,24 +24,24 @@ In order to simulate a smartphone that publishes a NavSatFix message we build th
 To test how the Jackal reacts to different obstacles we used models from the gazebo_models.
 
 ## jackal_simulator
-http://wiki.ros.org/jackal_simulator
-https://github.com/jackal/jackal_simulator/tree/kinetic-devel
+* http://wiki.ros.org/jackal_simulator
+* https://github.com/jackal/jackal_simulator/tree/kinetic-devel
 
 ## jackal_desktop
-http://wiki.ros.org/jackal_desktop
-https://github.com/jackal/jackal_desktop/tree/kinetic-devel
+* http://wiki.ros.org/jackal_desktop
+* https://github.com/jackal/jackal_desktop/tree/kinetic-devel
 
 ## ROS-Mobile
 * without our new widget: https://github.com/ROS-Mobile/ROS-Mobile-Android
 * with our new widget: app-release.apk
 
 ## robot_localization
-http://wiki.ros.org/robot_localization
-https://github.com/cra-ros-pkg/robot_localization/tree/kinetic-devel
+* http://wiki.ros.org/robot_localization
+* https://github.com/cra-ros-pkg/robot_localization/tree/kinetic-devel
 
 ## hector_gazebo_plugins
-http://wiki.ros.org/hector_gazebo_plugins
-https://github.com/tu-darmstadt-ros-pkg/hector_gazebo/tree/kinetic-devel
+* http://wiki.ros.org/hector_gazebo_plugins
+* https://github.com/tu-darmstadt-ros-pkg/hector_gazebo/tree/kinetic-devel
 
 ## GPS_Ball
 look in our models folder
