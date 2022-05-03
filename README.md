@@ -13,7 +13,7 @@ For the execution in the real world the corresponding commented code lines must 
 the code lines for the execution in simulation must be commented out.
 ***
 
-Used versions of ROS and Ubuntu: Ubuntu 16, ROS kinetc
+Used versions of ROS and Ubuntu: Ubuntu 16, ROS kinetc\
 For more information, please check out our package documentation.
 
 # Used Technologies
