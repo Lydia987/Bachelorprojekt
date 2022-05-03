@@ -32,8 +32,8 @@ http://wiki.ros.org/jackal_desktop
 https://github.com/jackal/jackal_desktop/tree/kinetic-devel
 
 ## ROS-Mobile
-without our new widget: https://github.com/ROS-Mobile/ROS-Mobile-Android
-with our new widget: app-release.apk
+* without our new widget: https://github.com/ROS-Mobile/ROS-Mobile-Android
+* with our new widget: app-release.apk
 
 ## robot_localization
 http://wiki.ros.org/robot_localization
