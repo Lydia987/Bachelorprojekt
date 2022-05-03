@@ -7,7 +7,7 @@
     <node pkg="follow_pkg" name="WallFollowing" type="WallFollowing.py" output="screen" />
     <node pkg="follow_pkg" name="Arbiter" type="Arbiter.py" output="screen" />
 
-    <?ignore
+
     <!-- Topic des Sensors (IMU)/-->
 
     <node pkg="robot_localization" type="ekf_localization_node"
@@ -43,6 +43,6 @@
         <remap from="/gps/fix" to="/navsat/fix" />
 
     </node>
-    ?>
+
 
 </launch>
